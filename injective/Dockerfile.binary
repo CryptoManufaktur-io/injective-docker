@@ -5,6 +5,7 @@ FROM ghcr.io/tomwright/dasel:2-alpine AS dasel
 FROM debian:bookworm-slim AS builder
 
 ARG DAEMON_VERSION=v1.15.0-1748457819
+ENV DAEMON_VERSION=${DAEMON_VERSION}
 # Toggle insecure mode for local testing (set to "true" for local testing)
 ARG LOCAL_TESTING=false
 ENV LOCAL_TESTING=${LOCAL_TESTING}
@@ -20,18 +21,20 @@ RUN apt-get update && \
 # download the release from Github and unzip the files.
 # NOTE: This is a temporary workaround for a missing go package causing building from source to be impossible
 RUN if [ "$LOCAL_TESTING" = "true" ]; then \
-        echo "Local testing mode: Disabling SSL verification and enabling insecure module downloads"; \
-        export GIT_SSL_NO_VERIFY=true && \
-        export GOINSECURE="*" && \
-        export GOSUMDB=off && \
-        export GOPROXY=direct && \
-        export GOPRIVATE=github.com/coinbase/rosetta-sdk-go && \
-        export GIT_TERMINAL_PROMPT=0 && \
-        export WGET_FLAGS=--no-check-certificate; \
+    echo "Local testing mode: Disabling SSL verification and enabling insecure module downloads"; \
+    export GIT_SSL_NO_VERIFY=true && \
+    export GOINSECURE="*" && \
+    export GOSUMDB=off && \
+    export GOPROXY=direct && \
+    export GIT_TERMINAL_PROMPT=0 && \
+    export WGET_FLAGS=--no-check-certificate; \
     else \
-        echo "Production mode: Using secure defaults"; \
+    echo "Production mode: Using secure defaults"; \
+    export WGET_FLAGS=""; \
     fi && \
-    wget https://github.com/InjectiveLabs/injective-chain-releases/releases/download/${DAEMON_VERSION}/linux-amd64.zip -q $WGET_FLAGS && \
+    mkdir -p /build && \
+    echo "Downloading from: https://github.com/InjectiveLabs/injective-chain-releases/releases/download/${DAEMON_VERSION}/linux-amd64.zip" && \
+    wget "https://github.com/InjectiveLabs/injective-chain-releases/releases/download/${DAEMON_VERSION}/linux-amd64.zip" $WGET_FLAGS && \
     unzip linux-amd64.zip -d /build 
 
 
@@ -41,7 +44,7 @@ FROM debian:bookworm-slim
 # Define mounted volume
 VOLUME /cosmos
 
-ARG USER=cosmos
+ARG USER=injective
 ARG UID=10001
 
 # Create a user with no login shell
@@ -82,9 +85,9 @@ RUN chown -R ${USER}:${USER} /cosmos && chmod -R 700 /cosmos
 
 # Only change permissions if shared libraries exist, then update ldconfig
 RUN if ls /usr/local/lib/*.so 1>/dev/null 2>&1; then \
-        chmod 644 /usr/local/lib/*.so; \
+    chmod 644 /usr/local/lib/*.so; \
     else \
-        echo "No shared libraries found in /usr/local/lib/"; \
+    echo "No shared libraries found in /usr/local/lib/"; \
     fi && \
     ldconfig
 

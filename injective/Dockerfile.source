@@ -30,7 +30,6 @@ RUN if [ "$LOCAL_TESTING" = "true" ]; then \
         export GOINSECURE="*" && \
         export GOSUMDB=off && \
         export GOPROXY=direct && \
-        export GOPRIVATE=github.com/coinbase/rosetta-sdk-go && \
         export GIT_TERMINAL_PROMPT=0; \
     else \
         echo "Production mode: Using secure defaults"; \
@@ -50,7 +49,7 @@ FROM debian:bookworm-slim
 # Define mounted volume
 VOLUME /cosmos
 
-ARG USER=cosmos
+ARG USER=injective
 ARG UID=10001
 
 # Create a user with no login shell

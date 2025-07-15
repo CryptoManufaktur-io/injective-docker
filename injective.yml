@@ -10,7 +10,7 @@ services:
   injective:
     build:
       context: ./injective
-      dockerfile: Dockerfile.source
+      dockerfile: Dockerfile.binary
       args:
         - DAEMON_VERSION=${INJECTIVE_NODE_VERSION}
         - USER=injective
