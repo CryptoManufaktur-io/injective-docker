@@ -46,8 +46,6 @@ services:
       - start
       - --home
       - /cosmos
-      - --log_format
-      - json
     labels:
         - traefik.enable=true
         - traefik.http.routers.${RPC_HOST}.service=${RPC_HOST}

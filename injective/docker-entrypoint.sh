@@ -19,7 +19,7 @@ if [[ ! -f /cosmos/.initialized ]]; then
   echo "Initializing!"
 
   echo "Running init..."
-  injectived init "$MONIKER" --chain-id "$NETWORK" --home /cosmos --overwrite
+  injectived init "$MONIKER" --chain-id "$NETWORK" --home /cosmos --log-format json --overwrite
 
   echo "Downloading genesis..."
   wget https://raw.githubusercontent.com/InjectiveLabs/mainnet-config/refs/heads/master/10001/genesis.json -O /cosmos/config/genesis.json
