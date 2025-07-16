@@ -38,8 +38,7 @@ RUN if [ "$LOCAL_TESTING" = "true" ]; then \
     mkdir -p /build && \
     echo "Downloading from: https://github.com/InjectiveLabs/injective-chain-releases/releases/download/${BINARY_VERSION}/linux-amd64.zip" && \
     wget "https://github.com/InjectiveLabs/injective-chain-releases/releases/download/${BINARY_VERSION}/linux-amd64.zip" $WGET_FLAGS && \
-    unzip linux-amd64.zip -d /build 
-
+    unzip linux-amd64.zip -d /build
 
 
 FROM debian:bookworm-slim
