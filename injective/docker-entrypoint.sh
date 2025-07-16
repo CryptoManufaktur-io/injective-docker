@@ -25,8 +25,7 @@ if [[ ! -f /cosmos/.initialized ]]; then
   wget https://raw.githubusercontent.com/InjectiveLabs/mainnet-config/refs/heads/master/10001/genesis.json -O /cosmos/config/genesis.json
 
   echo "Downloading seeds..."
-  SEEDS="ade4d8bc8cbe014af6ebdf3cb7b1e9ad36f412c0@seeds.polkachu.com:14356
-"
+  SEEDS="ade4d8bc8cbe014af6ebdf3cb7b1e9ad36f412c0@seeds.polkachu.com:14356"
   dasel put -f /cosmos/config/config.toml -v "$SEEDS" p2p.seeds
 
   # If a stop signal was received, exit early.
