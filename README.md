@@ -1,6 +1,6 @@
 # Injective Node Docker
 
-This repository provides Docker Compose configurations for running a Injective RPC node.
+This repository provides Docker Compose configurations for running an Injective RPC node.
 
 It’s designed to work with [central-proxy-docker](https://github.com/CryptoManufaktur-io/central-proxy-docker) for Traefik and Prometheus remote write. If you need external network connectivity, include `:ext-network.yml` in your `COMPOSE_FILE` (as set in your `.env` file).
 
