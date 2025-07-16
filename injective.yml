@@ -46,8 +46,6 @@ services:
       - start
       - --home
       - /cosmos
-      - --chain-id
-      - $NETWORK
       - --log_format
       - json
     labels:
