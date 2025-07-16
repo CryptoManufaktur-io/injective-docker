@@ -4,8 +4,11 @@ FROM ghcr.io/tomwright/dasel:2-alpine AS dasel
 # Get injectived
 FROM debian:bookworm-slim AS builder
 
-ARG DAEMON_VERSION=v1.15.0-1748457819
+ARG DAEMON_VERSION=v1.15.0
 ENV DAEMON_VERSION=${DAEMON_VERSION}
+# Version from the releases of the pre-built binaries here https://github.com/InjectiveLabs/injective-chain-releases/releases
+ARG BINARY_VERSION=v1.15.0-1748457819
+ENV BINARY_VERSION=${BINARY_VERSION}
 # Toggle insecure mode for local testing (set to "true" for local testing)
 ARG LOCAL_TESTING=false
 ENV LOCAL_TESTING=${LOCAL_TESTING}
@@ -33,8 +36,8 @@ RUN if [ "$LOCAL_TESTING" = "true" ]; then \
     export WGET_FLAGS=""; \
     fi && \
     mkdir -p /build && \
-    echo "Downloading from: https://github.com/InjectiveLabs/injective-chain-releases/releases/download/${DAEMON_VERSION}/linux-amd64.zip" && \
-    wget "https://github.com/InjectiveLabs/injective-chain-releases/releases/download/${DAEMON_VERSION}/linux-amd64.zip" $WGET_FLAGS && \
+    echo "Downloading from: https://github.com/InjectiveLabs/injective-chain-releases/releases/download/${BINARY_VERSION}/linux-amd64.zip" && \
+    wget "https://github.com/InjectiveLabs/injective-chain-releases/releases/download/${BINARY_VERSION}/linux-amd64.zip" $WGET_FLAGS && \
     unzip linux-amd64.zip -d /build 
 
 

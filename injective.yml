@@ -13,6 +13,7 @@ services:
       dockerfile: Dockerfile.binary
       args:
         - DAEMON_VERSION=${INJECTIVE_NODE_VERSION}
+        - BINARY_VERSION=${BINARY_VERSION}
         - USER=injective
     image: injective:local
     pull_policy: never
@@ -21,6 +22,7 @@ services:
     stop_grace_period: 5m
     environment:
       - DAEMON_VERSION=${INJECTIVE_NODE_VERSION}
+      - BINARY_VERSION=${BINARY_VERSION}
       - EXTRA_FLAGS=${EXTRA_FLAGS:-}
       - NETWORK=${NETWORK}
       - MONIKER=${MONIKER}
