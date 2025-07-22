@@ -14,7 +14,7 @@ if [[ ! -f /cosmos/.initialized ]]; then
   unzip -o $__cosmovisor_path/tmp/linux-amd64.zip -d $__genesis_path/bin/
   chmod +x $__genesis_path/bin/$DAEMON_NAME
   chmod +x $__genesis_path/bin/peggo
-  cp $__genesis_path/bin/libwasmvm.x86_64.so /usr/local/lib/
+
 
   mkdir -p $__upgrades_path/$DAEMON_VERSION/bin
   cp  $__genesis_path/bin/$DAEMON_NAME $__upgrades_path/$DAEMON_VERSION/bin/$DAEMON_NAME
