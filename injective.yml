@@ -9,11 +9,12 @@ x-logging: &logging
 services:
   injective:
     build:
-      context: ./injective
+      context: ./cosmovisor 
       dockerfile: Dockerfile.binary
       args:
         - DAEMON_VERSION=${INJECTIVE_NODE_VERSION}
         - BINARY_VERSION=${BINARY_VERSION}
+        - DOWNLOAD_BASE_URL=${DOWNLOAD_BASE_URL}
         - USER=injective
     image: injective:local
     pull_policy: never
@@ -24,8 +25,8 @@ services:
       - DAEMON_VERSION=${INJECTIVE_NODE_VERSION}
       - BINARY_VERSION=${BINARY_VERSION}
       - EXTRA_FLAGS=${EXTRA_FLAGS:-}
-      - NETWORK=${NETWORK}
-      - MONIKER=${MONIKER}
+      - NETWORK=${NETWORK:?NETWORK must be set}
+      - MONIKER=${MONIKER:?MONIKER must be set}
       - CL_GRPC_PORT=${CL_GRPC_PORT:-9090}
       - CL_P2P_PORT=${CL_P2P_PORT:-26656}
       - CL_RPC_PORT=${CL_RPC_PORT:-26657}
@@ -33,7 +34,20 @@ services:
       - WS_PORT=${WS_PORT:-8546}
       - SNAPSHOT=${SNAPSHOT}
       - LOG_LEVEL=${LOG_LEVEL:-info}
-      - MIN_GAS_PRICE=${MIN_GAS_PRICE:-0.08}
+      - MIN_GAS_PRICE=${MIN_GAS_PRICE:-160000000inj}
+      - PEERS=${PEERS:-}
+      - SEEDS=${SEEDS}
+      - STATE_SYNC_URL=${STATE_SYNC_URL}
+      - DOWNLOAD_BASE_URL=${DOWNLOAD_BASE_URL:-}
+      - DAEMON_HOME=/cosmos
+      - DAEMON_NAME=${DAEMON_NAME:-injectived}
+      - DAEMON_ALLOW_DOWNLOAD_BINARIES=false
+      - DAEMON_RESTART_AFTER_UPGRADE=true
+      - DAEMON_DATA_BACKUP_DIR=/cosmos
+      - CLIENT_DAEMON_NAME=injectived
+      - CLIENT_SKIP_UPGRADE=false
+      - CLIENT_START_PROCESS=false
+      - UNSAFE_SKIP_BACKUP=true
     ports:
       - ${CL_P2P_PORT:-26656}:${CL_P2P_PORT:-26656}/tcp
       - ${CL_RPC_PORT:-26657}:${CL_RPC_PORT:-26657}/tcp
@@ -42,10 +56,15 @@ services:
       - consensus-data:/cosmos
     entrypoint:
       - docker-entrypoint.sh
-      - injectived
+      - cosmovisor
+      - run
       - start
       - --home
       - /cosmos
+      - --log_format
+      - json
+      - --minimum-gas-prices
+      - ${MIN_GAS_PRICE}
     labels:
         - traefik.enable=true
         - traefik.http.routers.${RPC_HOST}.service=${RPC_HOST}
@@ -71,6 +90,41 @@ services:
         - metrics.port=26660
         - metrics.instance=injective
         - metrics.network=${NETWORK}
+
+  cosmovisor:
+    profiles: ["tools"]
+    build:
+      context: ./cosmovisor
+      dockerfile: Dockerfile.binary
+      args:
+        - DAEMON_VERSION=${INJECTIVE_NODE_VERSION}
+        - BINARY_VERSION=${BINARY_VERSION}
+        - USER=injective
+        - DOWNLOAD_BASE_URL=${DOWNLOAD_BASE_URL:-}
+    image: injective:local
+    pull_policy: never
+    user: injective
+    environment:
+      - DAEMON_VERSION=${INJECTIVE_NODE_VERSION}
+      - EXTRA_FLAGS=${EXTRA_FLAGS:-}
+      - NETWORK=${NETWORK:?NETWORK must be set}
+      - MONIKER=${MONIKER:?MONIKER must be set}
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      - DAEMON_HOME=/cosmos
+      - DAEMON_NAME=${DAEMON_NAME:-injectived}
+      - DAEMON_ALLOW_DOWNLOAD_BINARIES=false
+      - DAEMON_RESTART_AFTER_UPGRADE=true
+      - DAEMON_DATA_BACKUP_DIR=/cosmos
+      - CLIENT_DAEMON_NAME=injectived
+      - CLIENT_SKIP_UPGRADE=false
+      - CLIENT_START_PROCESS=false
+      - UNSAFE_SKIP_BACKUP=true
+    volumes:
+      - consensus-data:/cosmos
+      - ./upgrades:/upgrades:rw
+    entrypoint:
+      - cosmovisor
+
 
 volumes:
   consensus-data:
