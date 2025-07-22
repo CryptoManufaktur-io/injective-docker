@@ -102,7 +102,7 @@ if [ "$__should_update" -eq 1 ]; then
   echo "Downloading new version and setting it as current"
   mkdir -p $__upgrades_path/$DAEMON_VERSION/bin
   
-  wget "${DOWNLOAD_BASE_URL}/${BINARY_VERSION}/linux-amd64.zip" -O $__upgrades_path/$BINARY_VERSION/bin/$DAEMON_NAME
+  wget "${DOWNLOAD_BASE_URL}/${BINARY_VERSION}/linux-amd64.zip" -O $__upgrades_path/$DAEMON_VERSION/bin/$DAEMON_NAME
   chmod +x $__upgrades_path/$DAEMON_VERSION/bin/$DAEMON_NAME
   rm -f $__current_path
   ln -s -f $__upgrades_path/$DAEMON_VERSION $__current_path
