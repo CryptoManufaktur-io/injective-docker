@@ -136,7 +136,7 @@ dasel put -f /cosmos/config/app.toml -v true -t bool "iavl-disable-fastnode"
 dasel put -f /cosmos/config/client.toml -v "tcp://localhost:${CL_RPC_PORT}" node
 
 # Update peers if set
-dasel put -f /cosmos/config/config.toml -v $PERSISTENT_PEERS p2p.persistent_peers
+dasel put -f /cosmos/config/config.toml -v $PEERS p2p.persistent_peers
 
 # cosmovisor will create a subprocess to handle upgrades
 # so we need a special way to handle SIGTERM
