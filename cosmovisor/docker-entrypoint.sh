@@ -92,7 +92,7 @@ compare_versions() {
 }
 
 # First, we get the current version and compare it with the desired version.
-__current_version=$($__current_path/bin/$DAEMON_NAME version 2>&1)
+__current_version=$($__current_path/bin/$DAEMON_NAME version | awk '/Version/ {print $2}')
 
 echo "Current version: ${__current_version}. Desired version: ${DAEMON_VERSION}"
 
