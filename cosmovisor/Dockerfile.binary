@@ -60,6 +60,8 @@ RUN apt-get update && \
     lz4 \
     zstd \
     jq \
+    unzip \
+    git \
     aria2 \
     pv && \
     apt-get clean && \
