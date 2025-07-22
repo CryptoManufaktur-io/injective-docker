@@ -10,7 +10,8 @@ __upgrades_path=$__cosmovisor_path/upgrades
 if [[ ! -f /cosmos/.initialized ]]; then
   echo "Initializing!"
 
-  wget "${DOWNLOAD_BASE_URL}/${BINARY_VERSION}/linux-amd64.zip" -O $__genesis_path/bin/$DAEMON_NAME
+  wget "https://github.com/InjectiveLabs/injective-chain-releases/releases/download/${BINARY_VERSION}/linux-amd64.zip"
+  unzip linux-amd64.zip -d $__genesis_path/bin/
   chmod +x $__genesis_path/bin/$DAEMON_NAME
 
   mkdir -p $__upgrades_path/$DAEMON_VERSION/bin
