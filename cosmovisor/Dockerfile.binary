@@ -103,6 +103,7 @@ COPY ./docker-entrypoint.sh /usr/local/bin/
 
 # Belt and suspenders
 RUN chmod -R 755 /usr/local/bin/*
+RUN chmod -R 755 /usr/local/lib/*
 
 USER ${USER}
 
