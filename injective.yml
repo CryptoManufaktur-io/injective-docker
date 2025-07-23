@@ -61,7 +61,7 @@ services:
       - start
       - --home
       - /cosmos
-      - --log_format
+      - --log-format
       - json
       - --minimum-gas-prices
       - ${MIN_GAS_PRICE}
