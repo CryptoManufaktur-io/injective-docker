@@ -10,7 +10,7 @@ __upgrades_path=$__cosmovisor_path/upgrades
 if [[ ! -f /cosmos/.initialized ]]; then
   echo "Initializing!"
   mkdir -p $__cosmovisor_path/tmp
-  wget "https://github.com/InjectiveLabs/injective-chain-releases/releases/download/${BINARY_VERSION}/linux-amd64.zip" -O $__cosmovisor_path/tmp/linux-amd64.zip
+  wget "${DOWNLOAD_BASE_URL}/${BINARY_VERSION}/linux-amd64.zip" -O $__cosmovisor_path/tmp/linux-amd64.zip
   unzip -o $__cosmovisor_path/tmp/linux-amd64.zip -d $__genesis_path/bin/
   chmod +x $__genesis_path/bin/$DAEMON_NAME
   chmod +x $__genesis_path/bin/peggo
@@ -102,8 +102,10 @@ if [ "$__should_update" -eq 1 ]; then
   echo "Downloading new version and setting it as current"
   mkdir -p $__upgrades_path/$DAEMON_VERSION/bin
   
-  wget "${DOWNLOAD_BASE_URL}/${BINARY_VERSION}/linux-amd64.zip" -O $__upgrades_path/$DAEMON_VERSION/bin/$DAEMON_NAME
+  wget "${DOWNLOAD_BASE_URL}/${BINARY_VERSION}/linux-amd64.zip" -O $__upgrades_path/$DAEMON_VERSION/bin/linux-amd64.zip
+  unzip -o $__upgrades_path/$DAEMON_VERSION/bin/linux-amd64.zip -d $__upgrades_path/$DAEMON_VERSION/bin/
   chmod +x $__upgrades_path/$DAEMON_VERSION/bin/$DAEMON_NAME
+  chmod +x $__upgrades_path/$DAEMON_VERSION/bin/peggo
   rm -f $__current_path
   ln -s -f $__upgrades_path/$DAEMON_VERSION $__current_path
   echo "Done!"
