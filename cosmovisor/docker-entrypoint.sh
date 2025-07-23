@@ -128,6 +128,7 @@ dasel put -f /cosmos/config/config.toml -v "$MONIKER" moniker
 dasel put -f /cosmos/config/config.toml -v true -t bool prometheus
 dasel put -f /cosmos/config/config.toml -v "$LOG_LEVEL" log_level
 dasel put -f /cosmos/config/config.toml -v true -t bool instrumentation.prometheus
+dasel put -f /cosmos/config/config.toml -v "$SEEDS" p2p.seeds
 dasel put -f /cosmos/config/app.toml -v "0.0.0.0:${RPC_PORT}" json-rpc.address
 dasel put -f /cosmos/config/app.toml -v "0.0.0.0:${WS_PORT}" json-rpc.ws-address
 dasel put -f /cosmos/config/app.toml -v "0.0.0.0:${CL_GRPC_PORT}" grpc.address
@@ -136,6 +137,7 @@ dasel put -f /cosmos/config/app.toml -v "$MIN_GAS_PRICE" "minimum-gas-prices"
 dasel put -f /cosmos/config/app.toml -v 0 "iavl-cache-size"
 dasel put -f /cosmos/config/app.toml -v true -t bool "iavl-disable-fastnode"
 dasel put -f /cosmos/config/client.toml -v "tcp://localhost:${CL_RPC_PORT}" node
+
 
 # Update peers if set
 if [ -n "${PEERS:-}" ]; then
