@@ -9,7 +9,7 @@ x-logging: &logging
 services:
   injective:
     build:
-      context: ./cosmovisor 
+      context: ./cosmovisor
       dockerfile: Dockerfile.binary
       args:
         - DAEMON_VERSION=${INJECTIVE_NODE_VERSION}

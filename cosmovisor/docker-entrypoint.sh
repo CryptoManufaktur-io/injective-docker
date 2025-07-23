@@ -12,19 +12,19 @@ if [[ ! -f /cosmos/.initialized ]]; then
   mkdir -p $__cosmovisor_path/tmp
   wget "${DOWNLOAD_BASE_URL}/${BINARY_VERSION}/linux-amd64.zip" -O $__cosmovisor_path/tmp/linux-amd64.zip
   unzip -o $__cosmovisor_path/tmp/linux-amd64.zip -d $__genesis_path/bin/
-  chmod +x $__genesis_path/bin/$DAEMON_NAME
+  chmod +x $__genesis_path/bin/"$DAEMON_NAME"
   chmod +x $__genesis_path/bin/peggo
 
 
-  mkdir -p $__upgrades_path/$DAEMON_VERSION/bin
-  cp  $__genesis_path/bin/$DAEMON_NAME $__upgrades_path/$DAEMON_VERSION/bin/$DAEMON_NAME
-  cp  $__genesis_path/bin/peggo $__upgrades_path/$DAEMON_VERSION/bin/peggo
-  
+  mkdir -p $__upgrades_path/"$DAEMON_VERSION"/bin
+  cp  $__genesis_path/bin/"$DAEMON_NAME" $__upgrades_path/"$DAEMON_VERSION"/bin/"$DAEMON_NAME"
+  cp  $__genesis_path/bin/peggo $__upgrades_path/"$DAEMON_VERSION"/bin/peggo
+
   # Point to current.
   ln -s -f $__genesis_path $__current_path
 
   echo "Running init..."
-  $__genesis_path/bin/$DAEMON_NAME init $MONIKER --chain-id $NETWORK --home /cosmos --overwrite
+  $__genesis_path/bin/"$DAEMON_NAME" init "$MONIKER" --chain-id "$NETWORK" --home /cosmos --overwrite
 
 # Get specific genesis file based on network.
   echo "Downloading genesis..."
@@ -38,7 +38,7 @@ if [[ ! -f /cosmos/.initialized ]]; then
 
   if [ -n "$SNAPSHOT" ]; then
     echo "Downloading snapshot..."
-    curl -o - -L $SNAPSHOT | lz4 -c -d - | tar --exclude='data/priv_validator_state.json' -x -C /cosmos
+    curl -o - -L "$SNAPSHOT" | lz4 -c -d - | tar --exclude='data/priv_validator_state.json' -x -C /cosmos
   else
     echo "No snapshot URL defined."
   fi
@@ -55,13 +55,13 @@ if [[ ! -f /cosmos/.initialized ]]; then
     echo "SNAPSHOT_HEIGHT=$SNAPSHOT_HEIGHT"
 
     # Get the snapshot hash
-    SNAPSHOT_HASH=$(curl -s $STATE_SYNC_URL/block\?height\=$SNAPSHOT_HEIGHT | jq -r '.result.block_id.hash')
+    SNAPSHOT_HASH=$(curl -s "$STATE_SYNC_URL"/block\?height\=$SNAPSHOT_HEIGHT | jq -r '.result.block_id.hash')
     echo "SNAPSHOT_HASH=$SNAPSHOT_HASH"
 
     dasel put -f /cosmos/config/config.toml -v true statesync.enable
     dasel put -f /cosmos/config/config.toml -v "${STATE_SYNC_URL},${STATE_SYNC_URL}" statesync.rpc_servers
     dasel put -f /cosmos/config/config.toml -v $SNAPSHOT_HEIGHT statesync.trust_height
-    dasel put -f /cosmos/config/config.toml -v $SNAPSHOT_HASH statesync.trust_hash
+    dasel put -f /cosmos/config/config.toml -v "$SNAPSHOT_HASH" statesync.trust_hash
   else
     echo "No rapid sync url defined."
   fi
@@ -92,22 +92,22 @@ compare_versions() {
 }
 
 # First, we get the current version and compare it with the desired version.
-__current_version=$($__current_path/bin/$DAEMON_NAME version | awk '/Version/ {print $2}')
+__current_version=$($__current_path/bin/"$DAEMON_NAME" version | awk '/Version/ {print $2}')
 
 echo "Current version: ${__current_version}. Desired version: ${DAEMON_VERSION}"
 
-compare_versions $__current_version $DAEMON_VERSION
+compare_versions "$__current_version" "$DAEMON_VERSION"
 
 if [ "$__should_update" -eq 1 ]; then
   echo "Downloading new version and setting it as current"
-  mkdir -p $__upgrades_path/$DAEMON_VERSION/bin
-  
-  wget "${DOWNLOAD_BASE_URL}/${BINARY_VERSION}/linux-amd64.zip" -O $__upgrades_path/$DAEMON_VERSION/bin/linux-amd64.zip
-  unzip -o $__upgrades_path/$DAEMON_VERSION/bin/linux-amd64.zip -d $__upgrades_path/$DAEMON_VERSION/bin/
-  chmod +x $__upgrades_path/$DAEMON_VERSION/bin/$DAEMON_NAME
-  chmod +x $__upgrades_path/$DAEMON_VERSION/bin/peggo
+  mkdir -p $__upgrades_path/"$DAEMON_VERSION"/bin
+
+  wget "${DOWNLOAD_BASE_URL}/${BINARY_VERSION}/linux-amd64.zip" -O $__upgrades_path/"$DAEMON_VERSION"/bin/linux-amd64.zip
+  unzip -o $__upgrades_path/"$DAEMON_VERSION"/bin/linux-amd64.zip -d $__upgrades_path/"$DAEMON_VERSION"/bin/
+  chmod +x $__upgrades_path/"$DAEMON_VERSION"/bin/"$DAEMON_NAME"
+  chmod +x $__upgrades_path/"$DAEMON_VERSION"/bin/peggo
   rm -f $__current_path
-  ln -s -f $__upgrades_path/$DAEMON_VERSION $__current_path
+  ln -s -f $__upgrades_path/"$DAEMON_VERSION" $__current_path
   echo "Done!"
 else
   echo "No updates needed."
@@ -142,7 +142,7 @@ dasel put -f /cosmos/config/client.toml -v "tcp://localhost:${CL_RPC_PORT}" node
 # Update peers if set
 if [ -n "${PEERS:-}" ]; then
   echo "Updating persistent peers..."
-  dasel put -f /cosmos/config/config.toml -v $PEERS p2p.persistent_peers
+  dasel put -f /cosmos/config/config.toml -v "$PEERS" p2p.persistent_peers
 fi
 
 
