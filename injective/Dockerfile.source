@@ -25,14 +25,14 @@ WORKDIR /build
 # In one RUN command, conditionally set environment variables if LOCAL_TESTING is "true",
 # then clone the repository, check out the desired version, and build.
 RUN if [ "$LOCAL_TESTING" = "true" ]; then \
-        echo "Local testing mode: Disabling SSL verification and enabling insecure module downloads"; \
-        export GIT_SSL_NO_VERIFY=true && \
-        export GOINSECURE="*" && \
-        export GOSUMDB=off && \
-        export GOPROXY=direct && \
-        export GIT_TERMINAL_PROMPT=0; \
+    echo "Local testing mode: Disabling SSL verification and enabling insecure module downloads"; \
+    export GIT_SSL_NO_VERIFY=true && \
+    export GOINSECURE="*" && \
+    export GOSUMDB=off && \
+    export GOPROXY=direct && \
+    export GIT_TERMINAL_PROMPT=0; \
     else \
-        echo "Production mode: Using secure defaults"; \
+    echo "Production mode: Using secure defaults"; \
     fi && \
     git clone https://github.com/InjectiveFoundation/injective-core.git && \
     cd injective-core && \
@@ -91,9 +91,9 @@ RUN chown -R ${USER}:${USER} /cosmos && chmod -R 700 /cosmos
 
 # Only change permissions if shared libraries exist, then update ldconfig
 RUN if ls /usr/local/lib/*.so 1>/dev/null 2>&1; then \
-        chmod 644 /usr/local/lib/*.so; \
+    chmod 644 /usr/local/lib/*.so; \
     else \
-        echo "No shared libraries found in /usr/local/lib/"; \
+    echo "No shared libraries found in /usr/local/lib/"; \
     fi && \
     ldconfig
 

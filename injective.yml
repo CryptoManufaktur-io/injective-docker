@@ -44,7 +44,7 @@ services:
       - DAEMON_ALLOW_DOWNLOAD_BINARIES=false
       - DAEMON_RESTART_AFTER_UPGRADE=true
       - DAEMON_DATA_BACKUP_DIR=/cosmos
-      - CLIENT_DAEMON_NAME=injectived
+      - CLIENT_DAEMON_NAME=${CLIENT_DAEMON_NAME:-injectived}
       - CLIENT_SKIP_UPGRADE=false
       - CLIENT_START_PROCESS=false
       - UNSAFE_SKIP_BACKUP=true
@@ -124,6 +124,179 @@ services:
       - ./upgrades:/upgrades:rw
     entrypoint:
       - cosmovisor
+
+  cli:
+    profiles: ["tools"]
+    build:
+      context: ./cosmovisor
+      dockerfile: Dockerfile.binary
+      args:
+        - DAEMON_VERSION=${INJECTIVE_NODE_VERSION}
+        - USER=injective
+        - DOWNLOAD_BASE_URL=${DOWNLOAD_BASE_URL:-}
+    image: injective:local
+    pull_policy: never
+    user: injective
+    environment:
+      - DAEMON_VERSION=${INJECTIVE_NODE_VERSION}
+      - EXTRA_FLAGS=${EXTRA_FLAGS:-}
+      - NETWORK=${NETWORK}
+      - MONIKER=${MONIKER}
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      - DAEMON_HOME=/cosmos
+      - DAEMON_NAME=${DAEMON_NAME:-injectived}
+      - DAEMON_ALLOW_DOWNLOAD_BINARIES=false
+      - DAEMON_RESTART_AFTER_UPGRADE=true
+      - DAEMON_DATA_BACKUP_DIR=/cosmos
+      - CLIENT_DAEMON_NAME=${DAEMON_NAME:-injectived}
+      - CLIENT_SKIP_UPGRADE=false
+      - CLIENT_START_PROCESS=false
+      - UNSAFE_SKIP_BACKUP=true
+    volumes:
+      - consensus-data:/cosmos
+      - ./keys/operator:/cosmos/keyring-test:rw
+      - ./keys/consensus/priv_validator_key.json:/cosmos/config/priv_validator_key.json:rw
+      - ./keys/consensus/priv_validator_state.json:/cosmos/data/priv_validator_state.json:rw
+    entrypoint:
+      - injectived
+
+  create-validator-keys:
+    profiles: ["tools"]
+    build:
+      context: ./cosmovisor
+      dockerfile: Dockerfile.binary
+      args:
+        - DAEMON_VERSION=${INJECTIVE_NODE_VERSION}
+        - USER=injective
+        - DOWNLOAD_BASE_URL=${DOWNLOAD_BASE_URL:-}
+    image: injective:local
+    pull_policy: never
+    user: root
+    volumes:
+      - ./keys/consensus:/data/config:rw
+    entrypoint: ["/bin/bash","-c"]
+    command:
+      - |
+        injectived init $MONIKER --chain-id $NETWORK --home /cosmos > /dev/null 2>&1
+        cp /cosmos/config/priv_validator_key.json /data/config/
+        cp /cosmos/data/priv_validator_state.json /data/config/
+        chown -R injective:injective /data/config/*
+        echo "Validator keys created!"
+
+  import-validator-keys:
+    profiles: ["tools"]
+    build:
+      context: ./cosmovisor
+      dockerfile: Dockerfile.binary
+      args:
+        - DAEMON_VERSION=${INJECTIVE_NODE_VERSION}
+        - USER=injective
+        - DOWNLOAD_BASE_URL=${DOWNLOAD_BASE_URL:-}
+    image: injective:local
+    pull_policy: never
+    user: root
+    volumes:
+      - consensus-data:/cosmos
+      - ./keys/consensus:/data/config:rw
+    entrypoint: ["/bin/bash","-c"]
+    command:
+      - |
+        echo "Importing validator key and state file from ./keys/consensus into container"
+        cp /data/config/priv_validator_key.json /cosmos/config/
+        cp /data/config/priv_validator_state.json /cosmos/data/
+        chown -R injective:injective /cosmos/config/priv_validator_key.json
+        chown -R injective:injective /cosmos/data/priv_validator_state.json
+        echo "Validator keys imported!"
+
+  export-validator-keys:
+    profiles: ["tools"]
+    build:
+      context: ./cosmovisor
+      dockerfile: Dockerfile.binary
+      args:
+        - DAEMON_VERSION=${INJECTIVE_NODE_VERSION}
+        - USER=injective
+        - DOWNLOAD_BASE_URL=${DOWNLOAD_BASE_URL:-}
+    image: injective:local
+    pull_policy: never
+    user: root
+    volumes:
+      - consensus-data:/cosmos
+      - ./keys/consensus:/data/config:rw
+    entrypoint: ["/bin/bash","-c"]
+    command:
+      - |
+        echo "Exporting validator key and state file from container to ./keys/consensus"
+        cp /cosmos/config/priv_validator_key.json /data/config/
+        cp /cosmos/data/priv_validator_state.json /data/config/
+        echo "Validator keys exported!"
+
+  create-operator-wallet:
+    profiles: ["tools"]
+    build:
+      context: ./cosmovisor
+      dockerfile: Dockerfile.binary
+      args:
+        - DAEMON_VERSION=${INJECTIVE_NODE_VERSION}
+        - USER=injective
+        - DOWNLOAD_BASE_URL=${DOWNLOAD_BASE_URL:-}
+    image: injective:local
+    pull_policy: never
+    user: root
+    volumes:
+      - ./keys/operator:/cosmos/keyring-test:rw
+    entrypoint: ["/bin/bash","-c"]
+    command:
+      - |
+        injectived init $MONIKER --chain-id $NETWORK --home /cosmos > /dev/null 2>&1
+        injectived keys add $MONIKER --keyring-backend test --home /cosmos 2>&1 | tee /tmp/temp_backup
+        [ $${PIPESTATUS[0]} -eq 0 ] && sed -n '/- address/,$$p' /tmp/temp_backup > "/cosmos/keyring-test/${MONIKER}.backup" || rm /tmp/temp_backup
+        injectived --home /cosmos --keyring-backend test keys show ${MONIKER} --bech val -a
+        chown -R injective:injective /cosmos/keyring-test/*
+
+  register-validator:
+    profiles: ["tools"]
+    build:
+      context: ./cosmovisor
+      dockerfile: Dockerfile.binary
+      args:
+        - DAEMON_VERSION=${INJECTIVE_NODE_VERSION}
+        - USER=injective
+        - DOWNLOAD_BASE_URL=${DOWNLOAD_BASE_URL:-}
+    image: injective:local
+    pull_policy: never
+    user: injective
+    environment:
+      - MIN_GAS_PRICE=${MIN_GAS_PRICE}
+    volumes:
+      - ./keys/consensus/priv_validator_key.json:/cosmos/config/priv_validator_key.json:ro
+      - ./keys/consensus/priv_validator_state.json:/cosmos/data/priv_validator_state.json:rw
+      - ./keys/operator:/cosmos/keyring-test:ro
+    entrypoint: ["/bin/bash","-c"]
+    command:
+      - |
+        echo "Validator pubkey:"
+        injectived --home /cosmos comet show-validator
+        cat > /cosmos/stake-validator.json << EOF
+        {
+            "pubkey": $(injectived --home /cosmos comet show-validator),
+            "amount": "1000000inj",
+            "moniker": "$(echo $MONIKER)",
+            "commission-rate": "0.1",
+            "commission-max-rate": "0.2",
+            "commission-max-change-rate": "0.01",
+            "min-self-delegation": "1"
+        }
+        EOF
+        cat /cosmos/stake-validator.json
+        injectived --home /cosmos tx staking create-validator /cosmos/stake-validator.json \
+        --gas=auto \
+        --gas-adjustment=1.5 \
+        --gas-prices=500000000inj \
+        --chain-id=$NETWORK \
+        --from=$MONIKER \
+        --keyring-backend=test \
+        --node=http://injective:$CL_RPC_PORT/
 
 
 volumes:
