@@ -4,7 +4,7 @@ x-logging: &logging
     options:
       max-size: 100m
       max-file: "3"
-      tag: '{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}'
+      tag: "{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}"
 
 services:
   injective:
@@ -71,30 +71,30 @@ services:
       - --minimum-gas-prices
       - ${MIN_GAS_PRICE}
     labels:
-        - traefik.enable=true
-        - traefik.http.routers.${RPC_HOST}.service=${RPC_HOST}
-        - traefik.http.routers.${RPC_HOST}.entrypoints=websecure
-        - traefik.http.routers.${RPC_HOST}.rule=Host(`${RPC_HOST}.${DOMAIN}`)
-        - traefik.http.routers.${RPC_HOST}.tls.certresolver=letsencrypt
-        - traefik.http.routers.${RPC_HOST}lb.service=${RPC_HOST}
-        - traefik.http.routers.${RPC_HOST}lb.entrypoints=websecure
-        - traefik.http.routers.${RPC_HOST}lb.rule=Host(`${RPC_LB}.${DOMAIN}`)
-        - traefik.http.routers.${RPC_HOST}lb.tls.certresolver=letsencrypt
-        - traefik.http.services.${RPC_HOST}.loadbalancer.server.port=${RPC_PORT}
-        - traefik.http.routers.${WS_HOST:-injectivews}.service=${WS_HOST:-injectivews}
-        - traefik.http.routers.${WS_HOST:-injectivews}.entrypoints=websecure
-        - traefik.http.routers.${WS_HOST:-injectivews}.rule=Host(`${WS_HOST:-injectivews}.${DOMAIN}`)
-        - traefik.http.routers.${WS_HOST:-injectivews}.tls.certresolver=letsencrypt
-        - traefik.http.routers.${WS_HOST:-injectivews}lb.service=${WS_HOST:-injectivews}
-        - traefik.http.routers.${WS_HOST:-injectivews}lb.entrypoints=websecure
-        - traefik.http.routers.${WS_HOST:-injectivews}lb.rule=Host(`${WS_LB:-injectivews-lb}.${DOMAIN}`)
-        - traefik.http.routers.${WS_HOST:-injectivews}lb.tls.certresolver=letsencrypt
-        - traefik.http.services.${WS_HOST:-injectivews}.loadbalancer.server.port=${WS_PORT:-8546}
-        - metrics.scrape=true
-        - metrics.path=/metrics
-        - metrics.port=26660
-        - metrics.instance=injective
-        - metrics.network=${NETWORK}
+      - traefik.enable=true
+      - traefik.http.routers.${RPC_HOST}.service=${RPC_HOST}
+      - traefik.http.routers.${RPC_HOST}.entrypoints=websecure
+      - traefik.http.routers.${RPC_HOST}.rule=Host(`${RPC_HOST}.${DOMAIN}`)
+      - traefik.http.routers.${RPC_HOST}.tls.certresolver=letsencrypt
+      - traefik.http.routers.${RPC_HOST}lb.service=${RPC_HOST}
+      - traefik.http.routers.${RPC_HOST}lb.entrypoints=websecure
+      - traefik.http.routers.${RPC_HOST}lb.rule=Host(`${RPC_LB}.${DOMAIN}`)
+      - traefik.http.routers.${RPC_HOST}lb.tls.certresolver=letsencrypt
+      - traefik.http.services.${RPC_HOST}.loadbalancer.server.port=${RPC_PORT}
+      - traefik.http.routers.${WS_HOST:-injectivews}.service=${WS_HOST:-injectivews}
+      - traefik.http.routers.${WS_HOST:-injectivews}.entrypoints=websecure
+      - traefik.http.routers.${WS_HOST:-injectivews}.rule=Host(`${WS_HOST:-injectivews}.${DOMAIN}`)
+      - traefik.http.routers.${WS_HOST:-injectivews}.tls.certresolver=letsencrypt
+      - traefik.http.routers.${WS_HOST:-injectivews}lb.service=${WS_HOST:-injectivews}
+      - traefik.http.routers.${WS_HOST:-injectivews}lb.entrypoints=websecure
+      - traefik.http.routers.${WS_HOST:-injectivews}lb.rule=Host(`${WS_LB:-injectivews-lb}.${DOMAIN}`)
+      - traefik.http.routers.${WS_HOST:-injectivews}lb.tls.certresolver=letsencrypt
+      - traefik.http.services.${WS_HOST:-injectivews}.loadbalancer.server.port=${WS_PORT:-8546}
+      - metrics.scrape=true
+      - metrics.path=/metrics
+      - metrics.port=26660
+      - metrics.instance=injective
+      - metrics.network=${NETWORK}
 
   cosmovisor:
     profiles: ["tools"]
@@ -179,7 +179,7 @@ services:
     user: root
     volumes:
       - ./keys/consensus:/data/config:rw
-    entrypoint: ["/bin/bash","-c"]
+    entrypoint: ["/bin/bash", "-c"]
     command:
       - |
         injectived init $MONIKER --chain-id $NETWORK --home /cosmos > /dev/null 2>&1
@@ -203,7 +203,7 @@ services:
     volumes:
       - consensus-data:/cosmos
       - ./keys/consensus:/data/config:rw
-    entrypoint: ["/bin/bash","-c"]
+    entrypoint: ["/bin/bash", "-c"]
     command:
       - |
         echo "Importing validator key and state file from ./keys/consensus into container"
@@ -228,7 +228,7 @@ services:
     volumes:
       - consensus-data:/cosmos
       - ./keys/consensus:/data/config:rw
-    entrypoint: ["/bin/bash","-c"]
+    entrypoint: ["/bin/bash", "-c"]
     command:
       - |
         echo "Exporting validator key and state file from container to ./keys/consensus"
@@ -250,7 +250,7 @@ services:
     user: root
     volumes:
       - ./keys/operator:/cosmos/keyring-test:rw
-    entrypoint: ["/bin/bash","-c"]
+    entrypoint: ["/bin/bash", "-c"]
     command:
       - |
         injectived init $MONIKER --chain-id $NETWORK --home /cosmos > /dev/null 2>&1
@@ -277,7 +277,7 @@ services:
       - ./keys/consensus/priv_validator_key.json:/cosmos/config/priv_validator_key.json:ro
       - ./keys/consensus/priv_validator_state.json:/cosmos/data/priv_validator_state.json:rw
       - ./keys/operator:/cosmos/keyring-test:ro
-    entrypoint: ["/bin/bash","-c"]
+    entrypoint: ["/bin/bash", "-c"]
     command:
       - |
         echo "Validator pubkey:"
@@ -303,6 +303,40 @@ services:
         --keyring-backend=test \
         --node=http://injective:$CL_RPC_PORT/
 
+  register-peggo-eth-key:
+    profiles: ["tools"]
+    build:
+      context: ./cosmovisor
+      dockerfile: Dockerfile.binary
+      args:
+        - DAEMON_VERSION=${INJECTIVE_NODE_TAG}
+        - USER=injective
+        - DOWNLOAD_BASE_URL=${DOWNLOAD_BASE_URL:-}
+    image: injective:local
+    pull_policy: never
+    user: injective
+    environment:
+      - MIN_GAS_PRICE=${MIN_GAS_PRICE}
+    volumes:
+      - ./keys/consensus/priv_validator_key.json:/cosmos/config/priv_validator_key.json:ro
+      - ./keys/consensus/priv_validator_state.json:/cosmos/data/priv_validator_state.json:rw
+      - ./keys/operator:/cosmos/keyring-test:ro
+    entrypoint: ["/bin/bash", "-c"]
+    command:
+      - |
+        OPERATOR_KEY=$(injectived --home /cosmos --keyring-backend test keys show ${MONIKER} --bech val -a)
+        ETHEREUM_ADDRESS="$PEGGO_ETH_FROM"
+        VALIDATOR_PUBKEY=$(injectived --home /cosmos comet show-validator)
+        injectived --home /cosmos tx peggy set-orchestrator-address \
+          $VALIDATOR_INJ_ADDRESS \
+          $ORCHESTRATOR_INJ_ADDRESS \
+          $ETHEREUM_ADDRESS \
+          --from=$MONIKER \
+          --chain-id=$NETWORK \
+          --keyring-backend=test \
+          --yes \
+          --node=http://injective:$CL_RPC_PORT/ \
+          --gas-prices=500000000inj
 
 volumes:
   consensus-data:
