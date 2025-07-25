@@ -21,6 +21,11 @@ services:
     user: injective
     restart: unless-stopped
     stop_grace_period: 5m
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://injective:26657/status"]
+      interval: 10s
+      timeout: 10s
+      retries: 200
     environment:
       - DAEMON_VERSION=${INJECTIVE_NODE_TAG}
       - BINARY_TAG=${BINARY_TAG}
