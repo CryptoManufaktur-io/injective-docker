@@ -12,8 +12,8 @@ services:
       context: ./cosmovisor
       dockerfile: Dockerfile.binary
       args:
-        - DAEMON_VERSION=${INJECTIVE_NODE_VERSION}
-        - BINARY_VERSION=${BINARY_VERSION}
+        - DAEMON_VERSION=${INJECTIVE_NODE_TAG}
+        - BINARY_TAG=${BINARY_TAG}
         - DOWNLOAD_BASE_URL=${DOWNLOAD_BASE_URL}
         - USER=injective
     image: injective:local
@@ -22,8 +22,8 @@ services:
     restart: unless-stopped
     stop_grace_period: 5m
     environment:
-      - DAEMON_VERSION=${INJECTIVE_NODE_VERSION}
-      - BINARY_VERSION=${BINARY_VERSION}
+      - DAEMON_VERSION=${INJECTIVE_NODE_TAG}
+      - BINARY_TAG=${BINARY_TAG}
       - EXTRA_FLAGS=${EXTRA_FLAGS:-}
       - NETWORK=${NETWORK:?NETWORK must be set}
       - MONIKER=${MONIKER:?MONIKER must be set}
@@ -97,15 +97,15 @@ services:
       context: ./cosmovisor
       dockerfile: Dockerfile.binary
       args:
-        - DAEMON_VERSION=${INJECTIVE_NODE_VERSION}
-        - BINARY_VERSION=${BINARY_VERSION}
+        - DAEMON_VERSION=${INJECTIVE_NODE_TAG}
+        - BINARY_TAG=${BINARY_TAG}
         - USER=injective
         - DOWNLOAD_BASE_URL=${DOWNLOAD_BASE_URL:-}
     image: injective:local
     pull_policy: never
     user: injective
     environment:
-      - DAEMON_VERSION=${INJECTIVE_NODE_VERSION}
+      - DAEMON_VERSION=${INJECTIVE_NODE_TAG}
       - EXTRA_FLAGS=${EXTRA_FLAGS:-}
       - NETWORK=${NETWORK:?NETWORK must be set}
       - MONIKER=${MONIKER:?MONIKER must be set}
@@ -131,14 +131,14 @@ services:
       context: ./cosmovisor
       dockerfile: Dockerfile.binary
       args:
-        - DAEMON_VERSION=${INJECTIVE_NODE_VERSION}
+        - DAEMON_VERSION=${INJECTIVE_NODE_TAG}
         - USER=injective
         - DOWNLOAD_BASE_URL=${DOWNLOAD_BASE_URL:-}
     image: injective:local
     pull_policy: never
     user: injective
     environment:
-      - DAEMON_VERSION=${INJECTIVE_NODE_VERSION}
+      - DAEMON_VERSION=${INJECTIVE_NODE_TAG}
       - EXTRA_FLAGS=${EXTRA_FLAGS:-}
       - NETWORK=${NETWORK}
       - MONIKER=${MONIKER}
@@ -166,7 +166,7 @@ services:
       context: ./cosmovisor
       dockerfile: Dockerfile.binary
       args:
-        - DAEMON_VERSION=${INJECTIVE_NODE_VERSION}
+        - DAEMON_VERSION=${INJECTIVE_NODE_TAG}
         - USER=injective
         - DOWNLOAD_BASE_URL=${DOWNLOAD_BASE_URL:-}
     image: injective:local
@@ -189,7 +189,7 @@ services:
       context: ./cosmovisor
       dockerfile: Dockerfile.binary
       args:
-        - DAEMON_VERSION=${INJECTIVE_NODE_VERSION}
+        - DAEMON_VERSION=${INJECTIVE_NODE_TAG}
         - USER=injective
         - DOWNLOAD_BASE_URL=${DOWNLOAD_BASE_URL:-}
     image: injective:local
@@ -214,7 +214,7 @@ services:
       context: ./cosmovisor
       dockerfile: Dockerfile.binary
       args:
-        - DAEMON_VERSION=${INJECTIVE_NODE_VERSION}
+        - DAEMON_VERSION=${INJECTIVE_NODE_TAG}
         - USER=injective
         - DOWNLOAD_BASE_URL=${DOWNLOAD_BASE_URL:-}
     image: injective:local
@@ -237,7 +237,7 @@ services:
       context: ./cosmovisor
       dockerfile: Dockerfile.binary
       args:
-        - DAEMON_VERSION=${INJECTIVE_NODE_VERSION}
+        - DAEMON_VERSION=${INJECTIVE_NODE_TAG}
         - USER=injective
         - DOWNLOAD_BASE_URL=${DOWNLOAD_BASE_URL:-}
     image: injective:local
@@ -260,7 +260,7 @@ services:
       context: ./cosmovisor
       dockerfile: Dockerfile.binary
       args:
-        - DAEMON_VERSION=${INJECTIVE_NODE_VERSION}
+        - DAEMON_VERSION=${INJECTIVE_NODE_TAG}
         - USER=injective
         - DOWNLOAD_BASE_URL=${DOWNLOAD_BASE_URL:-}
     image: injective:local
