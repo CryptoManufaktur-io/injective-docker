@@ -1,0 +1,6 @@
+# To be used with injective.yml
+services:
+  injective-node:
+    ports:
+      - ${RPC_PORT:-8545}:${RPC_PORT:-8545}/tcp
+      - ${WS_PORT:-8546}:${WS_PORT:-8546}/tcp

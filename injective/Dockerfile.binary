@@ -1,0 +1,102 @@
+# Get dasel
+FROM ghcr.io/tomwright/dasel:2-alpine AS dasel
+
+# Get injectived
+FROM debian:bookworm-slim AS builder
+
+ARG DAEMON_VERSION=v1.15.0
+ENV DAEMON_VERSION=${DAEMON_VERSION}
+# Version from the releases of the pre-built binaries here https://github.com/InjectiveLabs/injective-chain-releases/releases
+ARG BINARY_TAG=v1.15.0-1748457819
+ENV BINARY_TAG=${BINARY_TAG}
+# Toggle insecure mode for local testing (set to "true" for local testing)
+ARG LOCAL_TESTING=false
+ENV LOCAL_TESTING=${LOCAL_TESTING}
+
+# Install required packages and update CA certificates
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends unzip \
+    wget \
+    ca-certificates && \
+    update-ca-certificates aria2 pv
+
+# In one RUN command, conditionally set environment variables if LOCAL_TESTING is "true",
+# download the release from Github and unzip the files.
+# NOTE: This is a temporary workaround for a missing go package causing building from source to be impossible
+RUN if [ "$LOCAL_TESTING" = "true" ]; then \
+    echo "Local testing mode: Disabling SSL verification and enabling insecure module downloads"; \
+    export GIT_SSL_NO_VERIFY=true && \
+    export GOINSECURE="*" && \
+    export GOSUMDB=off && \
+    export GOPROXY=direct && \
+    export GIT_TERMINAL_PROMPT=0 && \
+    export WGET_FLAGS=--no-check-certificate; \
+    else \
+    echo "Production mode: Using secure defaults"; \
+    export WGET_FLAGS=""; \
+    fi && \
+    mkdir -p /build && \
+    echo "Downloading from: https://github.com/InjectiveLabs/injective-chain-releases/releases/download/${BINARY_TAG}/linux-amd64.zip" && \
+    wget "https://github.com/InjectiveLabs/injective-chain-releases/releases/download/${BINARY_TAG}/linux-amd64.zip" $WGET_FLAGS && \
+    unzip linux-amd64.zip -d /build
+
+
+FROM debian:bookworm-slim
+
+# Define mounted volume
+VOLUME /cosmos
+
+ARG USER=injective
+ARG UID=10001
+
+# Create a user with no login shell
+RUN adduser \
+    --disabled-password \
+    --gecos "" \
+    --shell "/sbin/nologin" \
+    --uid "${UID}" \
+    "${USER}" && \
+    usermod -rG users ${USER}
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends ca-certificates \
+    bash \
+    tzdata \
+    hwloc \
+    libhwloc-dev \
+    wget \
+    curl \
+    unzip \
+    lz4 \
+    zstd \
+    jq \
+    aria2 \
+    pv && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN mkdir -p /cosmos/config && \
+    mkdir /cosmos/data
+
+COPY --from=dasel --chown=${USER}:${USER} /usr/local/bin/dasel /usr/local/bin/
+COPY --from=builder --chown=${USER}:${USER} /build/injectived /usr/local/bin/
+COPY --from=builder --chown=${USER}:${USER} /build/*.so /usr/local/lib/
+
+# Set correct permissions for /cosmos
+RUN chown -R ${USER}:${USER} /cosmos && chmod -R 700 /cosmos
+
+# Only change permissions if shared libraries exist, then update ldconfig
+RUN if ls /usr/local/lib/*.so 1>/dev/null 2>&1; then \
+    chmod 644 /usr/local/lib/*.so; \
+    else \
+    echo "No shared libraries found in /usr/local/lib/"; \
+    fi && \
+    ldconfig
+
+# Copy entrypoint script and set its permissions
+COPY ./docker-entrypoint.sh /usr/local/bin/
+RUN chmod -R 755 /usr/local/bin/*
+
+USER ${USER}
+
+ENTRYPOINT ["injectived", "--home", "/cosmos"]
