@@ -39,8 +39,6 @@ RUN if [ "$LOCAL_TESTING" = "true" ]; then \
     git checkout ${DAEMON_VERSION} && \
     make install
 
-RUN injectived version
-
 # Place libraries into a location where they can be easily found
 RUN find /go/pkg/mod -name '*.so' -exec cp -v {} /usr/local/lib/ \;
 
@@ -94,6 +92,7 @@ RUN mkdir -p /cosmos/cosmovisor/genesis/bin \
 
 COPY --from=dasel --chown=${USER}:${USER} /usr/local/bin/dasel /usr/local/bin/
 COPY --from=builder --chown=${USER}:${USER} /go/bin/injectived /usr/local/bin/
+COPY --from=builder --chown=${USER}:${USER} /go/bin/peggo /usr/local/bin/
 COPY --from=builder --chown=${USER}:${USER} /usr/local/lib/*.so /usr/local/lib/
 
 # Set correct permissions for /cosmos

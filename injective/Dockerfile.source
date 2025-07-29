@@ -4,7 +4,7 @@ FROM ghcr.io/tomwright/dasel:2-alpine AS dasel
 # Build injectived
 FROM golang:1.24-bookworm  AS builder
 
-ARG DAEMON_VERSION=v1.15.0
+ARG DAEMON_VERSION=${DAEMON_VERSION}
 # Toggle insecure mode for local testing (set to "true" for local testing)
 ARG LOCAL_TESTING=false
 ENV LOCAL_TESTING=${LOCAL_TESTING}
