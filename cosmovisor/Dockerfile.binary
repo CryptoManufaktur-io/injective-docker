@@ -93,6 +93,7 @@ RUN mkdir -p /cosmos/cosmovisor/genesis/bin \
 # Copy binaries.
 COPY --from=dasel --chown=${USER}:${USER} /usr/local/bin/dasel /usr/local/bin/
 COPY --from=builder --chown=${USER}:${USER} /build/injectived /usr/local/bin/
+COPY --from=builder --chown=${USER}:${USER} /build/peggo /usr/local/bin/
 COPY --from=builder --chown=${USER}:${USER} /build/*.so /usr/lib/
 
 # Set correct permissions.

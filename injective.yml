@@ -10,7 +10,7 @@ services:
   injective:
     build:
       context: ./cosmovisor
-      dockerfile: Dockerfile.source
+      dockerfile: Dockerfile.binary
       args:
         - DAEMON_VERSION=${DAEMON_VERSION}
         - BINARY_TAG=${BINARY_TAG}
@@ -99,7 +99,7 @@ services:
   peggo:
     build:
       context: ./cosmovisor
-      dockerfile: Dockerfile.source
+      dockerfile: Dockerfile.binary
       args:
         - DAEMON_VERSION=${DAEMON_VERSION}
         - USER=injective
@@ -146,12 +146,8 @@ services:
       - consensus-data:/cosmos
       - ./keys/operator:/cosmos/keyring-test:ro
       - ./keys/ethereum-peggo:/cosmos/config/peggo/keystore:ro
-    command:
-      - /bin/sh
-      - -c
-      - |
-        ulimit -n 120000
-        peggo orchestrator
+    entrypoint: ["/bin/bash", "-c"]
+    command: "peggo orchestrator"
     depends_on:
       injective:
         condition: service_healthy
@@ -160,7 +156,7 @@ services:
     profiles: ["tools"]
     build:
       context: ./cosmovisor
-      dockerfile: Dockerfile.source
+      dockerfile: Dockerfile.binary
       args:
         - DAEMON_VERSION=${DAEMON_VERSION}
         - BINARY_TAG=${BINARY_TAG}
@@ -194,7 +190,7 @@ services:
     profiles: ["tools"]
     build:
       context: ./cosmovisor
-      dockerfile: Dockerfile.source
+      dockerfile: Dockerfile.binary
       args:
         - DAEMON_VERSION=${DAEMON_VERSION}
         - USER=injective
@@ -229,7 +225,7 @@ services:
     profiles: ["tools"]
     build:
       context: ./cosmovisor
-      dockerfile: Dockerfile.source
+      dockerfile: Dockerfile.binary
       args:
         - DAEMON_VERSION=${DAEMON_VERSION}
         - USER=injective
@@ -252,7 +248,7 @@ services:
     profiles: ["tools"]
     build:
       context: ./cosmovisor
-      dockerfile: Dockerfile.source
+      dockerfile: Dockerfile.binary
       args:
         - DAEMON_VERSION=${DAEMON_VERSION}
         - USER=injective
@@ -277,7 +273,7 @@ services:
     profiles: ["tools"]
     build:
       context: ./cosmovisor
-      dockerfile: Dockerfile.source
+      dockerfile: Dockerfile.binary
       args:
         - DAEMON_VERSION=${DAEMON_VERSION}
         - USER=injective
@@ -300,7 +296,7 @@ services:
     profiles: ["tools"]
     build:
       context: ./cosmovisor
-      dockerfile: Dockerfile.source
+      dockerfile: Dockerfile.binary
       args:
         - DAEMON_VERSION=${DAEMON_VERSION}
         - USER=injective
@@ -323,7 +319,7 @@ services:
     profiles: ["tools"]
     build:
       context: ./cosmovisor
-      dockerfile: Dockerfile.source
+      dockerfile: Dockerfile.binary
       args:
         - DAEMON_VERSION=${DAEMON_VERSION}
         - USER=injective
@@ -367,7 +363,7 @@ services:
     profiles: ["tools"]
     build:
       context: ./cosmovisor
-      dockerfile: Dockerfile.source
+      dockerfile: Dockerfile.binary
       args:
         - DAEMON_VERSION=${DAEMON_VERSION}
         - USER=injective
