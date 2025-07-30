@@ -118,9 +118,9 @@ services:
       - PEGGO_TENDERMINT_RPC=${PEGGO_TENDERMINT_RPC:-http://injective:26657}
       - PEGGO_COSMOS_FEE_DENOM=${PEGGO_COSMOS_FEE_DENOM:-inj}
       - PEGGO_COSMOS_GAS_PRICES=${PEGGO_COSMOS_GAS_PRICES:-160000000inj}
-      - PEGGO_COSMOS_KEYRING="test"
-      - PEGGO_COSMOS_KEYRING_DIR=${PEGGO_COSMOS_KEYRING_DIR:-/cosmos/keyring-test}
-      - PEGGO_COSMOS_KEYRING_APP=${PEGGO_COSMOS_KEYRING_APP:-test}
+      - PEGGO_COSMOS_KEYRING=${PEGGO_COSMOS_KEYRING:-file}
+      - PEGGO_COSMOS_KEYRING_DIR=${PEGGO_COSMOS_KEYRING_DIR:-/cosmos/keyring-file}
+      - PEGGO_COSMOS_KEYRING_APP=${PEGGO_COSMOS_KEYRING_APP:-}
       - PEGGO_COSMOS_FROM=${PEGGO_COSMOS_FROM:-peggo}
       - PEGGO_COSMOS_FROM_PASSPHRASE=${PEGGO_COSMOS_FROM_PASSPHRASE:-}
       - PEGGO_COSMOS_USE_LEDGER=${PEGGO_COSMOS_USE_LEDGER:-false}
@@ -144,10 +144,12 @@ services:
     stop_grace_period: 5m
     volumes:
       - consensus-data:/cosmos
-      - ./keys/operator:/cosmos/keyring-test:ro
+      - ./keys/operator:/cosmos/keyring-file:rw
       - ./keys/ethereum-peggo:/cosmos/config/peggo/keystore:ro
     entrypoint: ["/bin/bash", "-c"]
-    command: "peggo orchestrator"
+    command:
+      - |
+        peggo orchestrator
     depends_on:
       injective:
         condition: service_healthy
@@ -215,7 +217,7 @@ services:
       - UNSAFE_SKIP_BACKUP=true
     volumes:
       - consensus-data:/cosmos
-      - ./keys/operator:/cosmos/keyring-test:rw
+      - ./keys/operator:/cosmos/keyring-file:rw
       - ./keys/consensus/priv_validator_key.json:/cosmos/config/priv_validator_key.json:rw
       - ./keys/consensus/priv_validator_state.json:/cosmos/data/priv_validator_state.json:rw
     entrypoint:
@@ -305,15 +307,15 @@ services:
     pull_policy: never
     user: root
     volumes:
-      - ./keys/operator:/cosmos/keyring-test:rw
+      - ./keys/operator:/cosmos/keyring-file:rw
     entrypoint: ["/bin/bash", "-c"]
     command:
       - |
         injectived init $MONIKER --chain-id $NETWORK --home /cosmos > /dev/null 2>&1
-        injectived keys add $MONIKER --keyring-backend test --home /cosmos 2>&1 | tee /tmp/temp_backup
-        [ $${PIPESTATUS[0]} -eq 0 ] && sed -n '/- address/,$$p' /tmp/temp_backup > "/cosmos/keyring-test/${MONIKER}.backup" || rm /tmp/temp_backup
-        injectived --home /cosmos --keyring-backend test keys show ${MONIKER} --bech val -a
-        chown -R injective:injective /cosmos/keyring-test/*
+        injectived keys add $MONIKER --keyring-backend file --home /cosmos 2>&1 | tee /tmp/temp_backup
+        [ $${PIPESTATUS[0]} -eq 0 ] && sed -n '/- address/,$$p' /tmp/temp_backup > "/cosmos/keyring-file/${MONIKER}.backup" || rm /tmp/temp_backup
+        injectived --home /cosmos --keyring-backend file keys show ${MONIKER} --bech val -a
+        chown -R injective:injective /cosmos/keyring-file/*
 
   register-validator:
     profiles: ["tools"]
@@ -332,7 +334,7 @@ services:
     volumes:
       - ./keys/consensus/priv_validator_key.json:/cosmos/config/priv_validator_key.json:ro
       - ./keys/consensus/priv_validator_state.json:/cosmos/data/priv_validator_state.json:rw
-      - ./keys/operator:/cosmos/keyring-test:ro
+      - ./keys/operator:/cosmos/keyring-file:ro
     entrypoint: ["/bin/bash", "-c"]
     command:
       - |
@@ -356,7 +358,7 @@ services:
         --gas-prices=500000000inj \
         --chain-id=$NETWORK \
         --from=$MONIKER \
-        --keyring-backend=test \
+        --keyring-backend=file \
         --node=http://injective:$CL_RPC_PORT/
 
   register-peggo-eth-key:
@@ -376,20 +378,20 @@ services:
     volumes:
       - ./keys/consensus/priv_validator_key.json:/cosmos/config/priv_validator_key.json:ro
       - ./keys/consensus/priv_validator_state.json:/cosmos/data/priv_validator_state.json:rw
-      - ./keys/operator:/cosmos/keyring-test:ro
+      - ./keys/operator:/cosmos/keyring-file:ro
     entrypoint: ["/bin/bash", "-c"]
     command:
       - |
-        OPERATOR_KEY=$(injectived --home /cosmos --keyring-backend test keys show ${MONIKER} --bech val -a)
-        ETHEREUM_ADDRESS="$PEGGO_ETH_FROM"
-        VALIDATOR_PUBKEY=$(injectived --home /cosmos comet show-validator)
+        export OPERATOR_KEY=$(injectived --home /cosmos --keyring-backend file keys show ${MONIKER} --bech val -a) && \
+        export ETHEREUM_ADDRESS="$PEGGO_ETH_FROM" && \
+        export VALIDATOR_PUBKEY=$(injectived --home /cosmos comet show-validator) && \
         injectived --home /cosmos tx peggy set-orchestrator-address \
           $VALIDATOR_INJ_ADDRESS \
           $ORCHESTRATOR_INJ_ADDRESS \
           $ETHEREUM_ADDRESS \
           --from=$MONIKER \
           --chain-id=$NETWORK \
-          --keyring-backend=test \
+          --keyring-backend=file \
           --yes \
           --node=http://injective:$CL_RPC_PORT/ \
           --gas-prices=500000000inj
