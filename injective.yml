@@ -145,7 +145,7 @@ services:
     volumes:
       - consensus-data:/cosmos
       - ./keys/operator:/cosmos/keyring-file:rw
-      - ./keys/ethereum-peggo:/cosmos/config/peggo/keystore:ro
+      - ./keys/ethereum-peggo/keystore.json:/cosmos/config/peggo/keystore/keystore.json:rw
     entrypoint: ["/bin/bash", "-c"]
     command:
       - |
