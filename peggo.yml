@@ -5,7 +5,9 @@ services:
       dockerfile: Dockerfile.binary
       args:
         - DAEMON_VERSION=${DAEMON_VERSION}
+        - BINARY_TAG=${BINARY_TAG}
         - USER=injective
+        - DOWNLOAD_BASE_URL=${DOWNLOAD_BASE_URL:-}
     image: injective:local
     pull_policy: never
     user: injective
