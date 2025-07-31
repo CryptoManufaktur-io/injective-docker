@@ -4,10 +4,10 @@ FROM ghcr.io/tomwright/dasel:2-alpine AS dasel
 # Get injectived
 FROM debian:bookworm-slim AS builder
 
-ARG DAEMON_VERSION=v1.15.0
+ARG DAEMON_VERSION=${DAEMON_VERSION}
 ENV DAEMON_VERSION=${DAEMON_VERSION}
 # Version from the releases of the pre-built binaries here https://github.com/InjectiveLabs/injective-chain-releases/releases
-ARG BINARY_TAG=v1.15.0-1748457819
+ARG BINARY_TAG=${BINARY_TAG}
 ENV BINARY_TAG=${BINARY_TAG}
 # Toggle insecure mode for local testing (set to "true" for local testing)
 ARG LOCAL_TESTING=false
