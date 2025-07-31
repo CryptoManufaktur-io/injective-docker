@@ -55,8 +55,8 @@ if [[ ! -f /cosmos/.initialized ]]; then
     echo "SNAPSHOT_HEIGHT=$SNAPSHOT_HEIGHT"
 
     # Get the snapshot hash
-    SNAPSHOT_HASH=$(curl -s "$STATE_SYNC_URL"/block\?height\=$SNAPSHOT_HEIGHT | jq -r '.result.block_id.hash')
-    echo "SNAPSHOT_HASH=$SNAPSHOT_HASH"
+    SNAPSHOT_HASH=$(curl -s "$STATE_SYNC_URL"/block\?height=$SNAPSHOT_HEIGHT | jq -r '.result.block_id.hash')
+    echo "SNAPSHOT_HASH=$SNAPSHOT_HASH"https://www.shellcheck.net/wiki/SC1001
 
     dasel put -f /cosmos/config/config.toml -v true statesync.enable
     dasel put -f /cosmos/config/config.toml -v "${STATE_SYNC_URL},${STATE_SYNC_URL}" statesync.rpc_servers
