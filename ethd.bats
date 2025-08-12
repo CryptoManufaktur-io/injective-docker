@@ -3,9 +3,11 @@
 # Setup and teardown functions
 setup() {
     # Create a temporary directory for testing
+    # shellcheck disable=SC2155
     export TEST_DIR="$(mktemp -d)"
+    # shellcheck disable=SC2155
     export ORIGINAL_DIR="$(pwd)"
-    cd "$TEST_DIR"
+    cd "$TEST_DIR" || exit
 
     # Copy the ethd script to test directory
     cp "$ORIGINAL_DIR/ethd" .
@@ -14,6 +16,7 @@ setup() {
     # Create mock files
     echo "This is Injective Node Docker v1.0.0" > README.md
     echo "ENV_VERSION=1" > default.env
+    # shellcheck disable=SC2129
     echo "COMPOSE_FILE=injective.yml" >> default.env
     echo "INJECTIVE_TAG=latest" >> default.env
     echo "INJECTIVE_REPO=injectiveprotocol/core" >> default.env
@@ -30,7 +33,7 @@ setup() {
 }
 
 teardown() {
-    cd "$ORIGINAL_DIR"
+    cd "$ORIGINAL_DIR" || exit
     rm -rf "$TEST_DIR"
 }
 
@@ -68,13 +71,15 @@ teardown() {
 @test "ethd help update shows update-specific help" {
     run ./ethd help update
     [ "$status" -eq 0 ]
-    [[ "$output" =~ "usage: ./ethd update" ]]
+    [[ "$output" =~ usage:\ ./ethd\ update ]]
     [[ "$output" =~ "--refresh-targets" ]]
     [[ "$output" =~ "--non-interactive" ]]
 }
 
 @test "ethd detects when docker is not available" {
     # Remove docker from PATH
+    # shellcheck disable=SC2031
+    # shellcheck disable=SC2030
     export PATH="/usr/bin:/bin"
 
     run ./ethd start
@@ -90,6 +95,8 @@ teardown() {
 # Test space functionality
 @test "space command structure works" {
     # Mock docker commands
+    # shellcheck disable=SC2031
+    # shellcheck disable=SC2030
     export PATH="$TEST_DIR/mock:$PATH"
     mkdir -p mock
 
@@ -131,6 +138,8 @@ EOF
     rm -f .env
 
     # Mock docker commands to avoid actual docker calls
+    # shellcheck disable=SC2031
+    # shellcheck disable=SC2030
     export PATH="$TEST_DIR/mock:$PATH"
     mkdir -p mock
 
@@ -143,11 +152,13 @@ EOF
     run ./ethd version
     # Should not crash, may have specific behavior for missing .env
     [[ "$status" -eq 0 || "$status" -eq 1 ]]
-    [[ "$output" =~ "No environment file (.env) found. Please create one before proceeding." ]]
+    [[ "$output" =~ No\ environment\ file\ \(\.env\)\ found\.\ Please\ create\ one\ before\ proceeding\. ]]
 }
 
 @test "ethd prevents running as root user" {
     # Mock the ownership check
+    # shellcheck disable=SC2031
+    # shellcheck disable=SC2030
     export PATH="$TEST_DIR/mock:$PATH"
     mkdir -p mock
 
@@ -166,6 +177,8 @@ EOF
 
 # Test command aliases
 @test "up command is alias for start" {
+    # shellcheck disable=SC2031
+    # shellcheck disable=SC2030
     export PATH="$TEST_DIR/mock:$PATH"
     mkdir -p mock
 
@@ -182,6 +195,8 @@ EOF
 }
 
 @test "down command is alias for stop" {
+    # shellcheck disable=SC2031
+    # shellcheck disable=SC2030
     export PATH="$TEST_DIR/mock:$PATH"
     mkdir -p mock
 
@@ -199,6 +214,8 @@ EOF
 # Test install command requirements
 @test "install command requires sudo capabilities" {
     # Mock groups command to not include sudo
+    # shellcheck disable=SC2031
+    # shellcheck disable=SC2030
     export PATH="$TEST_DIR/mock:$PATH"
     mkdir -p mock
 
