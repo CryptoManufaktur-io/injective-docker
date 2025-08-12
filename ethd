@@ -19,7 +19,7 @@ version() {
   case "${__value}" in
     *injective.yml* )
       __docompose exec injective injectived version
-      ;;&
+      ;;
   esac
 }
 
@@ -144,7 +144,12 @@ __get_value_from_env() {
   local __output_var="$3"
   local __output
   local __parsed_value
-
+  if [ ! -f "$__env_file" ]; then
+    echo "No environment file ($__env_file) found. Please create one before proceeding."
+    __found=0
+    printf -v "$__output_var" '%s' ""
+    return 0
+  fi
   if [[ "${__output_var}" == "__parsed_value" || "${__output_var}" == "__output_var" \
       || "${__output_var}" == "__output" || "${__output_var}" == "__env_file" \
       || "${__output_var}" == "__var_name" ]]; then
@@ -1054,6 +1059,7 @@ case "$__command" in
   *)
     echo "Unrecognized command $__command"
     help
+    exit 1
     ;;
 esac
 

@@ -1,0 +1,34 @@
+name: BATS Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  bats:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Install BATS
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y git
+        git clone https://github.com/bats-core/bats-core.git /tmp/bats-core
+        cd /tmp/bats-core
+        sudo ./install.sh /usr/local
+
+    - name: Run BATS tests
+      run: |
+        bats --version
+        bats --formatter tap ethd.bats
+
+    - name: Run BATS tests with verbose output on failure
+      if: failure()
+      run: |
+        echo "Tests failed, running with verbose output..."
+        bats --verbose-run ethd.bats
