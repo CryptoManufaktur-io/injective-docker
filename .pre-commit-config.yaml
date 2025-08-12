@@ -17,6 +17,7 @@ repos:
   hooks:
   - id: shellcheck
   - id: script-must-have-extension
+    exclude: ^ethd\.bats$
   - id: git-dirty
   - id: git-check
   - id: forbid-binary
