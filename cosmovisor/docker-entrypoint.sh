@@ -124,6 +124,7 @@ dasel put -f /cosmos/config/config.toml -v "1s" consensus.timeout_commit
 dasel put -f /cosmos/config/config.toml -v "${__public_ip}:${CL_P2P_PORT}" p2p.external_address
 dasel put -f /cosmos/config/config.toml -v "tcp://0.0.0.0:${CL_P2P_PORT}" p2p.laddr
 dasel put -f /cosmos/config/config.toml -v "tcp://0.0.0.0:${CL_RPC_PORT}" rpc.laddr
+dasel put -f /cosmos/config/config.toml -v "$DB_BACKEND" db_backend
 dasel put -f /cosmos/config/config.toml -v "$MONIKER" moniker
 dasel put -f /cosmos/config/config.toml -v true -t bool prometheus
 dasel put -f /cosmos/config/config.toml -v "$LOG_LEVEL" log_level

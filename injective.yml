@@ -38,6 +38,7 @@ services:
       - RPC_PORT=${RPC_PORT:-8545}
       - WS_PORT=${WS_PORT:-8546}
       - SNAPSHOT=${SNAPSHOT}
+      - DB_BACKEND=${DB_BACKEND}
       - LOG_LEVEL=${LOG_LEVEL:-info}
       - MIN_GAS_PRICE=${MIN_GAS_PRICE:-160000000inj}
       - PEERS=${PEERS:-}
