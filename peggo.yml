@@ -50,7 +50,7 @@ services:
     volumes:
       - consensus-data:/cosmos
       - ./keys/operator:/cosmos/keyring-file:rw
-      - ${PWD}/keys/ethereum-peggo:/cosmos/config/peggo/keystore
+      - ./keys/ethereum-peggo/:/cosmos/config/peggo/keystore/
     entrypoint: ["/bin/bash", "-c"]
     command:
       - |
