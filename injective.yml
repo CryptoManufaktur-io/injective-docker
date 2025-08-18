@@ -325,6 +325,7 @@ services:
     user: injective
     environment:
       - MIN_GAS_PRICE=${MIN_GAS_PRICE}
+      - PEGGO_ETH_FROM=${PEGGO_ETH_FROM}
     volumes:
       - ./keys/consensus/priv_validator_key.json:/cosmos/config/priv_validator_key.json:ro
       - ./keys/consensus/priv_validator_state.json:/cosmos/data/priv_validator_state.json:rw
@@ -332,13 +333,10 @@ services:
     entrypoint: ["/bin/bash", "-c"]
     command:
       - |
-        export OPERATOR_KEY=$(injectived --home /cosmos --keyring-backend file keys show ${MONIKER} --bech val -a) && \
-        export ETHEREUM_ADDRESS="$PEGGO_ETH_FROM" && \
-        export VALIDATOR_PUBKEY=$(injectived --home /cosmos comet show-validator) && \
         injectived --home /cosmos tx peggy set-orchestrator-address \
-          $VALIDATOR_INJ_ADDRESS \
-          $ORCHESTRATOR_INJ_ADDRESS \
-          $ETHEREUM_ADDRESS \
+          $(injectived --home /cosmos comet show-validator) \
+          $(injectived --home /cosmos --keyring-backend file keys show ${MONIKER} --bech val -a) \
+          $PEGGO_ETH_FROM \
           --from=$MONIKER \
           --chain-id=$NETWORK \
           --keyring-backend=file \
