@@ -1,0 +1,77 @@
+name: BATS Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  bats:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install BATS
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y git
+          git clone https://github.com/bats-core/bats-core.git /tmp/bats-core
+          cd /tmp/bats-core
+          sudo ./install.sh /usr/local
+
+          # Install BATS helper libraries
+          git clone https://github.com/bats-core/bats-support.git /tmp/bats-support
+          git clone https://github.com/bats-core/bats-assert.git /tmp/bats-assert
+          git clone https://github.com/bats-core/bats-file.git /tmp/bats-file
+
+      - name: Setup test environment
+        run: |
+          # Make ethd executable
+          chmod +x ethd
+
+          # Create test helper directories
+          mkdir -p test/test_helper
+
+          # Link BATS helper libraries
+          ln -sf /tmp/bats-support/load.bash test/test_helper/bats-support.bash
+          ln -sf /tmp/bats-assert/load.bash test/test_helper/bats-assert.bash
+          ln -sf /tmp/bats-file/load.bash test/test_helper/bats-file.bash
+
+      - name: Install Docker (for integration tests)
+        uses: docker/setup-buildx-action@v3
+
+      - name: Create test fixtures
+        run: |
+          # Create minimal test fixtures
+          echo "This is Injective Node Docker v1.0.0" > README.md
+          echo "ENV_VERSION=1" > default.env
+          echo "COMPOSE_FILE=injective.yml" >> default.env
+          echo "INJECTIVE_TAG=latest" >> default.env
+          echo "INJECTIVE_REPO=injectiveprotocol/core" >> default.env
+
+      - name: Run BATS tests
+        run: |
+          bats --version
+
+          # Run all .bats files in the repository
+          if [ -f "ethd.bats" ]; then
+            bats --formatter tap ethd.bats
+          elif [ -d "test" ]; then
+            bats --formatter tap test/
+          else
+            echo "No BATS test files found"
+            exit 1
+          fi
+
+      - name: Run BATS tests with verbose output on failure
+        if: failure()
+        run: |
+          echo "Tests failed, running with verbose output..."
+          if [ -f "ethd.bats" ]; then
+            bats --verbose-run ethd.bats
+          elif [ -d "test" ]; then
+            bats --verbose-run test/
+          fi

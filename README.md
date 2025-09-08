@@ -50,6 +50,23 @@ When you first start the node, the container will:
 - **Download and extract a snapshot (if provided):**
   If the `SNAPSHOT` environment variable is set, the snapshot will be downloaded via `aria2c` and then extracted into the node’s data directory using a pipeline that displays progress.
 
+## Key setup
+
+All keys for the validator should be stored in the `keys/*` directories
+* `consensus` is the validator key. It can be created using the following command.
+```bash
+  docker compose --profile tools run create-validator-keys
+```
+To back these keys up to your local `keys/consensus` directory, run the following command:
+```bash
+docker compose --profile tools run export-validator-keys
+```
+* `operator` keys are used as the delegated operator for this validator to perform signing duties on behalf of the validtor.  To create these keys run:
+```bash
+  docker compose --profile tools run create-operator-wallet
+```
+* ethereum-peggo is an Ethereum key that Injective uses to sign txs on Ethereum.  You can follow [instructions on the Injective docs](https://docs.injective.network/infra/validator-mainnet/peggo#managing-ethereum-keys-for-peggo).  Place this key in the `keys/ethereum-peggo` directory with the name `keystore.json`
+
 ## CLI Usage
 
 A CLI image containing the `injectived` binary is also available. For example:
