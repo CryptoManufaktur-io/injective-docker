@@ -49,7 +49,7 @@ services:
     stop_grace_period: 5m
     volumes:
       - consensus-data:/cosmos
-      - ./keys/operator:/cosmos/keyring-file:rw
+      - ./keys/operator/:/cosmos/keyring-file/:rw
       - ./keys/ethereum-peggo/:/cosmos/config/peggo/keystore/:rw
     entrypoint: ["/bin/bash", "-c"]
     command:
