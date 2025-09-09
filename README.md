@@ -65,7 +65,7 @@ docker compose --profile tools run export-validator-keys
 ```bash
   docker compose --profile tools run create-operator-wallet
 ```
-* ethereum-peggo is an Ethereum key that Injective uses to sign txs on Ethereum.  You can follow [instructions on the Injective docs](https://docs.injective.network/infra/validator-mainnet/peggo#managing-ethereum-keys-for-peggo).  Place this key in the `keys/ethereum-peggo` directory with the name `keystore.json`
+* ethereum-peggo is an Ethereum key that Injective uses to sign txs on Ethereum.  You can follow [instructions on the Injective docs](https://docs.injective.network/infra/validator-mainnet/peggo#managing-ethereum-keys-for-peggo).  Place this key in the `keys/ethereum-peggo` directory.  NOTE: Delete the file `DELETE-ME` as its a placeholder
 
 ## CLI Usage
 
