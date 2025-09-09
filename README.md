@@ -52,7 +52,13 @@ When you first start the node, the container will:
 
 ## Key setup
 
-All keys for the validator should be stored in the `keys/*` directories
+All keys for the validator should be stored in the `keys/*` directory.
+
+Create these directories with the following command
+```
+mkdir -p keys/{consensus,ethereum-peggo,operator}
+```
+
 * `consensus` is the validator key. It can be created using the following command.
 ```bash
   docker compose --profile tools run create-validator-keys
