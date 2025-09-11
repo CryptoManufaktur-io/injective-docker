@@ -130,6 +130,7 @@ dasel put -f /cosmos/config/config.toml -v true -t bool prometheus
 dasel put -f /cosmos/config/config.toml -v "$LOG_LEVEL" log_level
 dasel put -f /cosmos/config/config.toml -v true -t bool instrumentation.prometheus
 dasel put -f /cosmos/config/config.toml -v "$SEEDS" p2p.seeds
+dasel put -f /cosmos/config/app.toml -v 25600000 p2p.recv_rate
 dasel put -f /cosmos/config/app.toml -v "0.0.0.0:${RPC_PORT}" json-rpc.address
 dasel put -f /cosmos/config/app.toml -v "0.0.0.0:${WS_PORT}" json-rpc.ws-address
 dasel put -f /cosmos/config/app.toml -v "0.0.0.0:${CL_GRPC_PORT}" grpc.address
@@ -138,7 +139,17 @@ dasel put -f /cosmos/config/app.toml -v "$MIN_GAS_PRICE" "minimum-gas-prices"
 dasel put -f /cosmos/config/app.toml -v 0 "iavl-cache-size"
 dasel put -f /cosmos/config/app.toml -v true -t bool "iavl-disable-fastnode"
 dasel put -f /cosmos/config/client.toml -v "tcp://localhost:${CL_RPC_PORT}" node
-
+dasel put -f /cosmos/config/config.toml -v "1s" consensus.timeout_propose
+dasel put -f /cosmos/config/config.toml -v "100ms" consensus.timeout_propose_delta
+dasel put -f /cosmos/config/config.toml -v "250ms" consensus.timeout_prevote
+dasel put -f /cosmos/config/config.toml -v "100ms" consensus.timeout_prevote_delta
+dasel put -f /cosmos/config/config.toml -v "250ms" consensus.timeout_precommit
+dasel put -f /cosmos/config/config.toml -v "100ms" consensus.timeout_precommit_delta
+dasel put -f /cosmos/config/config.toml -v "500ms" consensus.timeout_commit
+dasel put -f /cosmos/config/config.toml -v true -t bool storage.discard_abci_responses
+dasel put -f /cosmos/config/config.toml -v "null" tx_index.indexer
+dasel put -f /cosmos/config/config.toml -v 500 mempool.size
+dasel put -f /cosmos/config/config.toml -v 1073741824 mempool.max_txs_bytes
 
 # Update peers if set
 if [ -n "${PEERS:-}" ]; then
