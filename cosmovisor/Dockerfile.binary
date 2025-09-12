@@ -87,7 +87,8 @@ VOLUME /cosmos
 RUN mkdir -p /cosmos/cosmovisor/genesis/bin \
     /cosmos/cosmovisor/upgrades \
     /cosmos/config \
-    /cosmos/data
+    /cosmos/data \
+    /cosmos/config/peggo/keystore
 
 
 # Copy binaries.
