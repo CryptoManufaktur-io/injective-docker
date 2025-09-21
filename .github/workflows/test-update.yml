@@ -22,4 +22,4 @@ jobs:
       - name: Create .env file
         run: cp default.env .env
       - name: Test ethd update
-        run: ./ethd update --debug --non-interactive
+        run: GOPROXY=direct ./ethd update --debug --non-interactive
