@@ -22,4 +22,6 @@ jobs:
       - name: Create .env file
         run: cp default.env .env
       - name: Test ethd update
+        env:
+          LOCAL_TESTING: "true"
         run: GOPROXY=direct ./ethd update --debug --non-interactive
