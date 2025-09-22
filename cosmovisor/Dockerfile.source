@@ -6,7 +6,7 @@ FROM golang:1.24-bookworm  AS builder
 
 ARG DAEMON_VERSION=${DAEMON_VERSION}
 # Toggle insecure mode for local testing (set to "true" for local testing)
-ARG LOCAL_TESTING=false
+ARG LOCAL_TESTING=true
 ENV LOCAL_TESTING=${LOCAL_TESTING}
 
 # Install required packages and update CA certificates
