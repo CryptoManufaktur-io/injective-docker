@@ -68,7 +68,13 @@ __public_ip=$(curl -s ifconfig.me || curl -s http://checkip.amazonaws.com || ech
 echo "Public ip: ${__public_ip}"
 
 # Update various configuration parameters.
-dasel put -f /cosmos/config/config.toml -v "1s" consensus.timeout_commit
+dasel put -f /cosmos/config/config.toml -v "500ms" consensus.timeout_commit
+dasel put -f /cosmos/config/config.toml -v "1s" consensus.timeout_propose
+dasel put -f /cosmos/config/config.toml -v "100ms" consensus.timeout_propose_delta
+dasel put -f /cosmos/config/config.toml -v "250ms" consensus.timeout_prevote
+dasel put -f /cosmos/config/config.toml -v "100ms" consensus.timeout_prevote_delta
+dasel put -f /cosmos/config/config.toml -v "250ms" consensus.timeout_precommit
+dasel put -f /cosmos/config/config.toml -v "100ms" consensus.timeout_precommit_delta
 dasel put -f /cosmos/config/config.toml -v "${__public_ip}:${CL_P2P_PORT}" p2p.external_address
 dasel put -f /cosmos/config/config.toml -v "tcp://0.0.0.0:${CL_P2P_PORT}" p2p.laddr
 dasel put -f /cosmos/config/config.toml -v "tcp://0.0.0.0:${CL_RPC_PORT}" rpc.laddr
@@ -76,12 +82,18 @@ dasel put -f /cosmos/config/config.toml -v "$MONIKER" moniker
 dasel put -f /cosmos/config/config.toml -v true -t bool prometheus
 dasel put -f /cosmos/config/config.toml -v "$LOG_LEVEL" log_level
 dasel put -f /cosmos/config/config.toml -v true -t bool instrumentation.prometheus
+dasel put -f /cosmos/config/config.toml -v 500 -t int mempool.size
+dasel put -f /cosmos/config/config.toml -v 1073741824 -t int mempool.max_txs_bytes
+dasel put -f /cosmos/config/config.toml -v 5120000 -t int p2p.send_rate
+dasel put -f /cosmos/config/config.toml -v 25600000 -t int p2p.recv_rate
+dasel put -f /cosmos/config/config.toml -v null tx_index.indexer
+dasel put -f /cosmos/config/config.toml -v true -t bool storage.discard_abci_responses
 dasel put -f /cosmos/config/app.toml -v "0.0.0.0:${RPC_PORT}" json-rpc.address
 dasel put -f /cosmos/config/app.toml -v "0.0.0.0:${WS_PORT}" json-rpc.ws-address
 dasel put -f /cosmos/config/app.toml -v "0.0.0.0:${CL_GRPC_PORT}" grpc.address
 dasel put -f /cosmos/config/app.toml -v true -t bool grpc.enable
 dasel put -f /cosmos/config/app.toml -v "$MIN_GAS_PRICE" "minimum-gas-prices"
-dasel put -f /cosmos/config/app.toml -v 0 "iavl-cache-size"
+dasel put -f /cosmos/config/app.toml -v 781250 -t int "iavl-cache-size"
 dasel put -f /cosmos/config/app.toml -v true -t bool "iavl-disable-fastnode"
 dasel put -f /cosmos/config/client.toml -v "tcp://localhost:${CL_RPC_PORT}" node
 
