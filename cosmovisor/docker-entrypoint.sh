@@ -130,7 +130,7 @@ dasel put -f /cosmos/config/config.toml -v true -t bool prometheus
 dasel put -f /cosmos/config/config.toml -v "$LOG_LEVEL" log_level
 dasel put -f /cosmos/config/config.toml -v true -t bool instrumentation.prometheus
 dasel put -f /cosmos/config/config.toml -v "$SEEDS" p2p.seeds
-dasel put -f /cosmos/config/app.toml -v 25600000 p2p.recv_rate
+dasel put -f /cosmos/config/config.toml -v 25600000 p2p.recv_rate
 dasel put -f /cosmos/config/app.toml -v "0.0.0.0:${RPC_PORT}" json-rpc.address
 dasel put -f /cosmos/config/app.toml -v "0.0.0.0:${WS_PORT}" json-rpc.ws-address
 dasel put -f /cosmos/config/app.toml -v "0.0.0.0:${CL_GRPC_PORT}" grpc.address

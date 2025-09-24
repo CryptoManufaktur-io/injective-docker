@@ -10,7 +10,7 @@ services:
   injective:
     build:
       context: ./cosmovisor
-      dockerfile: Dockerfile.binary
+      dockerfile: Dockerfile.source
       args:
         - DAEMON_VERSION=${DAEMON_VERSION}
         - BINARY_TAG=${BINARY_TAG}
@@ -29,6 +29,7 @@ services:
     environment:
       - DAEMON_VERSION=${DAEMON_VERSION}
       - BINARY_TAG=${BINARY_TAG}
+      - COSMOVISOR_VERSION=${COSMOVISOR_VERSION:-v1.6.0}
       - EXTRA_FLAGS=${EXTRA_FLAGS:-}
       - NETWORK=${NETWORK:?NETWORK must be set}
       - MONIKER=${MONIKER:?MONIKER must be set}
@@ -100,7 +101,7 @@ services:
     profiles: ["tools"]
     build:
       context: ./cosmovisor
-      dockerfile: Dockerfile.binary
+      dockerfile: Dockerfile.source
       args:
         - DAEMON_VERSION=${DAEMON_VERSION}
         - BINARY_TAG=${BINARY_TAG}
@@ -134,7 +135,7 @@ services:
     profiles: ["tools"]
     build:
       context: ./cosmovisor
-      dockerfile: Dockerfile.binary
+      dockerfile: Dockerfile.source
       args:
         - DAEMON_VERSION=${DAEMON_VERSION}
         - BINARY_TAG=${BINARY_TAG}
@@ -170,7 +171,7 @@ services:
     profiles: ["tools"]
     build:
       context: ./cosmovisor
-      dockerfile: Dockerfile.binary
+      dockerfile: Dockerfile.source
       args:
         - DAEMON_VERSION=${DAEMON_VERSION}
         - BINARY_TAG=${BINARY_TAG}
@@ -194,7 +195,7 @@ services:
     profiles: ["tools"]
     build:
       context: ./cosmovisor
-      dockerfile: Dockerfile.binary
+      dockerfile: Dockerfile.source
       args:
         - DAEMON_VERSION=${DAEMON_VERSION}
         - BINARY_TAG=${BINARY_TAG}
@@ -220,7 +221,7 @@ services:
     profiles: ["tools"]
     build:
       context: ./cosmovisor
-      dockerfile: Dockerfile.binary
+      dockerfile: Dockerfile.source
       args:
         - DAEMON_VERSION=${DAEMON_VERSION}
         - BINARY_TAG=${BINARY_TAG}
@@ -244,7 +245,7 @@ services:
     profiles: ["tools"]
     build:
       context: ./cosmovisor
-      dockerfile: Dockerfile.binary
+      dockerfile: Dockerfile.source
       args:
         - DAEMON_VERSION=${DAEMON_VERSION}
         - BINARY_TAG=${BINARY_TAG}
@@ -268,7 +269,7 @@ services:
     profiles: ["tools"]
     build:
       context: ./cosmovisor
-      dockerfile: Dockerfile.binary
+      dockerfile: Dockerfile.source
       args:
         - DAEMON_VERSION=${DAEMON_VERSION}
         - BINARY_TAG=${BINARY_TAG}
@@ -313,7 +314,7 @@ services:
     profiles: ["tools"]
     build:
       context: ./cosmovisor
-      dockerfile: Dockerfile.binary
+      dockerfile: Dockerfile.source
       args:
         - DAEMON_VERSION=${DAEMON_VERSION}
         - BINARY_TAG=${BINARY_TAG}
