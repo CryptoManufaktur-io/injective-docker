@@ -120,7 +120,6 @@ __public_ip=$(curl -s ifconfig.me/ip)
 echo "Public ip: ${__public_ip}"
 
 # Always update public IP address, moniker and ports.
-dasel put -f /cosmos/config/config.toml -v "1s" consensus.timeout_commit
 dasel put -f /cosmos/config/config.toml -v "${__public_ip}:${CL_P2P_PORT}" p2p.external_address
 dasel put -f /cosmos/config/config.toml -v "tcp://0.0.0.0:${CL_P2P_PORT}" p2p.laddr
 dasel put -f /cosmos/config/config.toml -v "tcp://0.0.0.0:${CL_RPC_PORT}" rpc.laddr
@@ -136,8 +135,9 @@ dasel put -f /cosmos/config/app.toml -v "0.0.0.0:${WS_PORT}" json-rpc.ws-address
 dasel put -f /cosmos/config/app.toml -v "0.0.0.0:${CL_GRPC_PORT}" grpc.address
 dasel put -f /cosmos/config/app.toml -v true -t bool grpc.enable
 dasel put -f /cosmos/config/app.toml -v "$MIN_GAS_PRICE" "minimum-gas-prices"
-dasel put -f /cosmos/config/app.toml -v 0 "iavl-cache-size"
 dasel put -f /cosmos/config/app.toml -v true -t bool "iavl-disable-fastnode"
+dasel put -f /cosmos/config/app.toml -v 3000 -t int wasm.memory_cache_size
+dasel delete -f /cosmos/config/app.toml iavl-cache-size
 dasel put -f /cosmos/config/client.toml -v "tcp://localhost:${CL_RPC_PORT}" node
 dasel put -f /cosmos/config/config.toml -v "1s" consensus.timeout_propose
 dasel put -f /cosmos/config/config.toml -v "100ms" consensus.timeout_propose_delta
