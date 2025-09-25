@@ -138,7 +138,7 @@ dasel put -f /cosmos/config/app.toml -v true -t bool grpc.enable
 dasel put -f /cosmos/config/app.toml -v "$MIN_GAS_PRICE" "minimum-gas-prices"
 dasel put -f /cosmos/config/app.toml -v true -t bool "iavl-disable-fastnode"
 dasel put -f /cosmos/config/app.toml -v 3000 -t int wasm.memory_cache_size
-dasel put -f /cosmos/config/app.toml -v 0 -t int iavl-cache-size
+dasel put -f /cosmos/config/app.toml -v 781250 -t int iavl-cache-size
 dasel put -f /cosmos/config/client.toml -v "tcp://localhost:${CL_RPC_PORT}" node
 dasel put -f /cosmos/config/config.toml -v "1s" consensus.timeout_propose
 dasel put -f /cosmos/config/config.toml -v "100ms" consensus.timeout_propose_delta
